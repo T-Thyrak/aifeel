@@ -1,0 +1,25 @@
+[build-system]
+
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aifeel"
+version = "0.0.1"
+description = "AIFeel is a simple positive/negative text classifier."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies", "optional-dependencies"]
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
+
+
+[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
+full = ["requirements/full.txt"]
+dev = ["requirements/dev.txt"]
+pandas = ["requirements/pandas.txt"]
