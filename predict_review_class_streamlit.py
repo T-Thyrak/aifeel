@@ -15,7 +15,10 @@ def main():
     result = ''
     if st.button('Predict'):
         st.subheader("Predicted Result:", divider="rainbow")
-        # result = 1 if model.predict([review])[0] else 0
+        # clean the review message
+        cleaned_review = review
+
+        # result = 1 if model.predict([cleaned_review])[0] else 0
         result = 0
         positive_prob = 0.9
         negative_prob = 0.9
