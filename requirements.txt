@@ -1,1 +1,5 @@
 dill
+pandas
+pyarrow
+black
+rich
