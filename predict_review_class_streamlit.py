@@ -8,10 +8,10 @@ import dill as model_file
 
 def main():
     st.title('Predict Review Message Category')
-    st.subheader('Enter the review message to predict the category')
+    # st.subheader('Enter the review message to predict the category')
 
     # review text with placeholder
-    review = st.text_area('Review Message')
+    review = st.text_area('Enter the review message:')
     result = ''
     if st.button('Predict'):
         st.subheader("Predicted Result:", divider="rainbow")
@@ -27,7 +27,6 @@ def main():
         # col2 is not used
         col1, col2 = st.columns(2)
         if result == 1:
-
             with col1:
                 # percentage_positive = int(positive_prob * 100) show the title "Positive Predicted" , "Probability",
                 # And slight light green color the background #ccffd2
@@ -49,7 +48,19 @@ def main():
                         f'<h4 style="color: white;">Probability: {negative_prob}</h3>'
                         f'</div>'
                         f'', unsafe_allow_html=True)
+            return
 
 
 if __name__ == '__main__':
+    st.subheader("Our Team", divider="rainbow")
+    st.markdown(f'<div>'
+                f'<h4>Team 3 - Mini Project 2 - 2024 &copy; All rights reserved❤️</h4>'
+                f'<ol>'
+                f'<li>VUTHY Panha</li>'
+                f'<li>TENG Thaisothyrak</li>'
+                f'<li>SIM Daro</li>'
+                f'<li>TAING Molika</li>'
+                f'<li>PICH Puthsreyneath</li>'
+                f'</ol>'
+                f'</div>', unsafe_allow_html=True)
     main()
