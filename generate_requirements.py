@@ -1,9 +1,12 @@
 import os
 
 
-reqs = ["dill"]
+reqs = ["dill", "nltk"]
 
-optional_reqs = {"pandas": ["pandas", "pyarrow"], "dev": ["black", "rich"]}
+optional_reqs = {
+    "pandas": ["pandas", "pyarrow", "numpy"],
+    "dev": ["black", "rich", "matplotlib"],
+}
 
 full = reqs + [item for sublist in optional_reqs.values() for item in sublist]
 

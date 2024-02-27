@@ -1,5 +1,7 @@
 dill
+nltk
 pandas
 pyarrow
 black
 rich
+matplotlib
