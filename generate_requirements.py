@@ -4,7 +4,8 @@ import os
 reqs = ["dill", "nltk"]
 
 optional_reqs = {
-    "pandas": ["pandas", "pyarrow", "numpy"],
+    "nn": ["tensorflow"],
+    "pandas": ["pandas", "pyarrow", "numpy", "scikit-learn"],
     "dev": ["black", "rich", "matplotlib"],
 }
 

@@ -1,7 +1,10 @@
 dill
 nltk
+tensorflow
 pandas
 pyarrow
+numpy
+scikit-learn
 black
 rich
 matplotlib

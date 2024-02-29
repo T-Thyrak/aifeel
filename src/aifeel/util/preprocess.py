@@ -4,8 +4,18 @@ from nltk.corpus import stopwords
 
 HTML_TAGS_PATTERN = re.compile(r"<.*?>")
 URI_PATTERN = re.compile(r"(.*?)\:\/\/(www\.)?(.*?)\/(.*?)")
-NORMAL_CHARS_PATTERN = re.compile(r"[^a-zA-Z0-9\s]")
+NORMAL_CHARS_PATTERN = re.compile(r"[^a-zA-Z0-9\s!]")
 stopwords_en = stopwords.words("english")
+
+# specifically keep i, me, my, you, your
+if "i" in stopwords_en:
+    stopwords_en.remove("i")
+if "me" in stopwords_en:
+    stopwords_en.remove("me")
+if "my" in stopwords_en:
+    stopwords_en.remove("my")
+if "you" in stopwords_en:
+    stopwords_en.remove("you")
 
 
 def remove_html_tags(text: str) -> str:
