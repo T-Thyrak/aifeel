@@ -1,6 +1,7 @@
 import re
 import nltk
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
 HTML_TAGS_PATTERN = re.compile(r"<.*?>")
 URI_PATTERN = re.compile(r"(.*?)\:\/\/(www\.)?(.*?)\/(.*?)")
@@ -16,6 +17,23 @@ if "my" in stopwords_en:
     stopwords_en.remove("my")
 if "you" in stopwords_en:
     stopwords_en.remove("you")
+
+def lemmatize_text(text: str) -> str:
+    """Lemmatize text."""
+    lemmatizer = WordNetLemmatizer()
+    tokens = nltk.word_tokenize(text)
+    tokens = [lemmatizer.lemmatize(token) for token in tokens]
+    return " ".join(tokens)
+
+import re
+
+def handle_negations(text: str) -> str:
+    """Handle negations in text."""
+    transformed = re.sub(r'\b(?:not|isn\'t|aren\'t|wasn\'t|weren\'t|haven\'t|hasn\'t|hadn\'t|don\'t|doesn\'t|didn\'t|won\'t|wouldn\'t|shan\'t|shouldn\'t|can\'t|cannot|couldn\'t|mustn\'t)\b[\w\s]+?(?=\b(?:not|isn\'t|aren\'t|wasn\'t|weren\'t|haven\'t|hasn\'t|hadn\'t|don\'t|doesn\'t|didn\'t|won\'t|wouldn\'t|shan\'t|shouldn\'t|can\'t|cannot|couldn\'t|mustn\'t)\b|[^\w\s])', 
+                         lambda match: re.sub(r'(\s+)(\w+)', r'\1NOT_\2', match.group(0)), 
+                         text,
+                         flags=re.IGNORECASE)
+    return transformed
 
 
 def remove_html_tags(text: str) -> str:
@@ -61,7 +79,9 @@ def preprocess_text(text: str) -> str:
     text = remove_special_characters(text)
     text = remove_extra_spaces(text)
     text = to_lowercase(text)
+    text = handle_negations(text)
     text = remove_stopwords(text)
+    text = lemmatize_text(text)
     return text
 
 
