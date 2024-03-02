@@ -8,14 +8,19 @@ NORMAL_CHARS_PATTERN = re.compile(r"[^a-zA-Z0-9\s!]")
 stopwords_en = stopwords.words("english")
 
 # specifically keep i, me, my, you, your
-if "i" in stopwords_en:
-    stopwords_en.remove("i")
-if "me" in stopwords_en:
-    stopwords_en.remove("me")
-if "my" in stopwords_en:
-    stopwords_en.remove("my")
-if "you" in stopwords_en:
-    stopwords_en.remove("you")
+keep_words = [
+    "i",
+    "me",
+    "my",
+    "you",
+    "your",
+    "no",
+    "not",
+]
+
+for word in keep_words:
+    if word in stopwords_en:
+        stopwords_en.remove(word)
 
 
 def remove_html_tags(text: str) -> str:
