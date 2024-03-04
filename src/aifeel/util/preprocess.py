@@ -2,6 +2,7 @@ import re
 import nltk
 from nltk import ngrams
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
 HTML_TAGS_PATTERN = re.compile(r"<.*?>")
 URI_PATTERN = re.compile(r"(.*?)\:\/\/(www\.)?(.*?)\/(.*?)")
@@ -42,6 +43,43 @@ keep_words = [
 for word in keep_words:
     if word in stopwords_en:
         stopwords_en.remove(word)
+
+lemmatizer = WordNetLemmatizer()
+
+
+def get_wordnet_pos(treebank_tag):
+    if treebank_tag.startswith("J"):
+        return "a"
+    elif treebank_tag.startswith("V"):
+        return "v"
+    elif treebank_tag.startswith("N"):
+        return "n"
+    elif treebank_tag.startswith("R"):
+        return "r"
+    else:
+        return "n"
+
+
+def lemmatize_text(text: str) -> str:
+    """Lemmatize text."""
+    tokens = nltk.word_tokenize(text)
+    pos_tags = nltk.pos_tag(tokens)
+    tokens = [
+        lemmatizer.lemmatize(word, get_wordnet_pos(tag)) for word, tag in pos_tags
+    ]
+    return " ".join(tokens)
+
+
+# def handle_negations(text: str) -> str:
+#     """Handle negations in text."""
+#     # transformed = re.sub(
+#     #     r"\b(?:not|isn\'t|aren\'t|wasn\'t|weren\'t|haven\'t|hasn\'t|hadn\'t|don\'t|doesn\'t|didn\'t|won\'t|wouldn\'t|shan\'t|shouldn\'t|can\'t|cannot|couldn\'t|mustn\'t)\b[\w\s]+?(?=\b(?:not|isn\'t|aren\'t|wasn\'t|weren\'t|haven\'t|hasn\'t|hadn\'t|don\'t|doesn\'t|didn\'t|won\'t|wouldn\'t|shan\'t|shouldn\'t|can\'t|cannot|couldn\'t|mustn\'t)\b|[^\w\s])",
+#     #     lambda match: re.sub(r"(\s+)(\w+)", r"\1NOT_\2", match.group(0)),
+#     #     text,
+#     #     flags=re.IGNORECASE,
+#     # )
+
+#     return transformed
 
 
 def remove_html_tags(text: str) -> str:
@@ -98,7 +136,7 @@ def remove_stopwords(text: str) -> str:
 #     }
 
 
-def funny_kind_of_preprocessing(text: str) -> str:
+def handle_negations(text: str) -> str:
     """Negation handling."""
     tokens = nltk.word_tokenize(text)
     new_tokens = [tokens[0]]
@@ -121,7 +159,9 @@ def preprocess_text(text: str) -> str:
     text = to_lowercase(text).strip()
     if not text:
         return text
-    text = funny_kind_of_preprocessing(text)
+    # text = handle_negations(text)
+    text = handle_negations(text)
+    text = lemmatize_text(text)
     # text = remove_stopwords(text)
     return text
 
