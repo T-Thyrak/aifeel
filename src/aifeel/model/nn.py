@@ -150,7 +150,7 @@ class NNClassifier(Model[np.ndarray, np.ndarray]):
         pos_pred = self.model.predict(X).flatten()
         neg_pred = 1 - pos_pred
 
-        result = [[[0, neg_pred[i]], [1, pos_pred[i]]] for i in range(len(pos_pred))]
+        result = [[neg_pred[i], pos_pred[i]] for i in range(len(pos_pred))]
         print(result)
 
         return np.array(result)
