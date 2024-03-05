@@ -44,6 +44,19 @@ else:
     except ImportError:
         _has_tensorflow = False
 
+if TYPE_CHECKING:
+    import sklearn
+    from sklearn.metrics import accuracy_score
+
+    _has_sklearn = True
+else:
+    try:
+        from sklearn.metrics import accuracy_score
+
+        _has_sklearn = True
+    except ImportError:
+        _has_sklearn = False
+
 from aifeel.model.model import Model
 
 if not _has_numpy:
@@ -52,6 +65,10 @@ if not _has_pandas:
     raise ImportError("pandas is not installed")
 if not _has_tensorflow:
     raise ImportError("tensorflow is not installed")
+if not _has_sklearn:
+    raise ImportError("sklearn is not installed")
+
+Float = float | np.float16 | np.float32 | np.float64
 
 
 class NNClassifier(Model[np.ndarray, np.ndarray]):
@@ -137,3 +154,7 @@ class NNClassifier(Model[np.ndarray, np.ndarray]):
         print(result)
 
         return np.array(result)
+
+    def score(self, X: np.ndarray, y: np.ndarray, sample_weight=None) -> Float:
+        # for cross validation purposes
+        return accuracy_score(y, self.predict(X), sample_weight=sample_weight)
