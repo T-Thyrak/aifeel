@@ -25,13 +25,13 @@ class Model(ABC, Generic[T, U]):
 
     def predict(self: Self, X: T) -> U:
         # if not self.is_fitted_:
-        if not hasattr(self, "is_fitted_"):
-            raise RuntimeError(f"{self.__class__.__name__} is not fitted yet.")
+        # if not hasattr(self, "is_fitted_"):
+        #     raise RuntimeError(f"{self.__class__.__name__} is not fitted yet.")
         return self._predict(X)
 
     def save(self: Self, path: str | PathLike) -> None:
-        if not hasattr(self, "is_fitted_"):
-            raise RuntimeError(f"{self.__class__.__name__} is not fitted yet.")
+        # if not hasattr(self, "is_fitted_"):
+        #     raise RuntimeError(f"{self.__class__.__name__} is not fitted yet.")
         self._save(path)
 
     def _save(self: Self, path: str | PathLike) -> None:
