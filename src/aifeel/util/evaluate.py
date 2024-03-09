@@ -20,7 +20,7 @@ def evaluate_model(initialized_model, loaded_model, model_name, X_train, y_train
     # Plot the confusion matrix
     cm = confusion_matrix(y_test, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["negative", "positive"])
-    disp.plot()
+    disp.plot(cmap='Blues')
     disp.ax_.set(title='Confusion Matrix')
     plt.show()
 
