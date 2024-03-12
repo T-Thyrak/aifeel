@@ -34,6 +34,7 @@ nltk.data.path.append(nltk_data_dir)
 
 if nltk.download("punkt", download_dir=nltk_data_dir):
     print("INFO: nltk punkt downloaded")
+    raise Exception("Download DONE!")
 if nltk.download("wordnet", download_dir=nltk_data_dir):
     print("INFO: nltk wordnet downloaded")
 if nltk.download("stopwords", download_dir=nltk_data_dir):
