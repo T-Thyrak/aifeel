@@ -16,6 +16,7 @@ else:
 nltk.download("punkt")
 nltk.download("wordnet")
 nltk.download("stopwords")
+nltk.download("average_perceptron_tagger")
 
 
 # Load the model
