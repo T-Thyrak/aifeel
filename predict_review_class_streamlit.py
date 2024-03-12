@@ -31,7 +31,7 @@ if not os.path.exists(nltk_data_dir):
 nltk.data.path.clear()
 nltk.data.path.append(nltk_data_dir)
 
-
+raise Exception("IMPASSABLE")
 if nltk.download("punkt", download_dir=nltk_data_dir):
     print("INFO: nltk punkt downloaded")
     raise Exception("Download DONE!")
