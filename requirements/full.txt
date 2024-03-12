@@ -1,6 +1,6 @@
-dill
+dill==0.3.8
 nltk
-tensorflow
+tensorflow==2.15.0
 pandas
 pyarrow
 numpy
@@ -8,4 +8,3 @@ scikit-learn
 black
 rich
 matplotlib
-seaborn

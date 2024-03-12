@@ -20,6 +20,6 @@ files = ["requirements/minimal.txt"]
 
 
 [tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
-full = ["requirements.txt"]
+full = ["requirements/full.txt"]
 dev = ["requirements/dev.txt"]
 pandas = ["requirements/pandas.txt"]
