@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 
 # Load the model
@@ -24,11 +25,18 @@ except AttributeError:
 else:
     ssl._create_default_https_context = _create_unverified_https_context
 
-if nltk.download("punkt"):
+nltk_data_dir = "./resources/nltk_data_dir/"
+if not os.path.exists(nltk_data_dir):
+    os.makedirs(nltk_data_dir, exist_ok=True)
+nltk.data.path.clear()
+nltk.data.path.append(nltk_data_dir)
+
+
+if nltk.download("punkt", download_dir=nltk_data_dir):
     print("INFO: nltk punkt downloaded")
-if nltk.download("wordnet"):
+if nltk.download("wordnet", download_dir=nltk_data_dir):
     print("INFO: nltk wordnet downloaded")
-if nltk.download("stopwords"):
+if nltk.download("stopwords", download_dir=nltk_data_dir):
     print("INFO: nltk stopwords downloaded")
 
 
