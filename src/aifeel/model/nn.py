@@ -1,5 +1,8 @@
 from __future__ import annotations
+import os
+from pathlib import Path
 from typing import TYPE_CHECKING
+import dill
 
 if TYPE_CHECKING:
     import numpy as np
@@ -48,6 +51,8 @@ if TYPE_CHECKING:
     import sklearn
     from sklearn.base import BaseEstimator, ClassifierMixin
     from sklearn.metrics import accuracy_score
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.model_selection import train_test_split
 
     _has_sklearn = True
 else:
@@ -55,17 +60,21 @@ else:
         import sklearn
         from sklearn.base import BaseEstimator, ClassifierMixin
         from sklearn.metrics import accuracy_score
+        from sklearn.feature_extraction.text import CountVectorizer
+        from sklearn.model_selection import train_test_split
 
         _has_sklearn = True
     except ImportError:
         _has_sklearn = False
 
 from aifeel.model.model import Model
+from aifeel.util import read_corpus, gen_dataframe
+from aifeel.util.preprocess import preprocess_text
+from aifeel.util.feature_extraction import extract_features, feature_to_vector
 
 if not _has_numpy:
     raise ImportError("numpy is not installed")
-if not _has_pandas:
-    raise ImportError("pandas is not installed")
+
 if not _has_tensorflow:
     raise ImportError("tensorflow is not installed")
 if not _has_sklearn:
@@ -94,40 +103,6 @@ class NNClassifier(Model[np.ndarray, np.ndarray], ClassifierMixin, BaseEstimator
         self.lr = lr
         self.early_stopping = early_stopping
         self.patience = patience
-        # self.input_dim = input_dim
-
-        # if model is None:
-        #     self.model = Sequential(
-        #         [
-        #             layers.Dense(512, input_dim=self.input_dim, activation="relu"),
-        #             layers.Dropout(0.5),
-        #             layers.Dense(256, activation="relu"),
-        #             layers.Dropout(0.5),
-        #             # layers.Dense(256),
-        #             # layers.Dropout(0.5),
-        #             # layers.Dense(128, activation="relu"),
-        #             # layers.Dropout(0.5),
-        #             # layers.Dense(256, activation="relu"),
-        #             # layers.Dropout(0.5),
-        #             # layers.Dense(512, activation="relu"),
-        #             # layers.Dropout(0.5),
-        #             # layers.Dense(1, activation="sigmoid"),
-        #             # layers.Embedding(input_dim, 64, input_length=input_dim),
-        #             # layers.LSTM(64, return_sequences=True, activation="relu"),
-        #             # layers.Dropout(0.5),
-        #             # layers.LSTM(64, activation="relu"),
-        #             # layers.Dropout(0.5),
-        #             layers.Dense(1, activation="sigmoid"),
-        #         ]
-        #     )
-        # else:
-        #     self.model = model
-
-        # optimizer = keras.optimizers.Adam(learning_rate=self.lr)
-
-        # self.model.compile(
-        #     loss="binary_crossentropy", optimizer=optimizer, metrics=["accuracy"]
-        # )
 
     def _fit(self, X: np.ndarray, y: np.ndarray) -> NNClassifier:
         self.model_ = Sequential(
@@ -202,3 +177,68 @@ class NNClassifier(Model[np.ndarray, np.ndarray], ClassifierMixin, BaseEstimator
         self.early_stopping = params["early_stopping"]
         self.patience = params["patience"]
         return self
+
+    @staticmethod
+    def export_basic_model():
+        if not _has_pandas:
+            raise ImportError("pandas is not installed")
+
+        negative_corpus, positive_corpus = read_corpus("negative-reviews"), read_corpus(
+            "positive-reviews"
+        )
+        negative_words, positive_words = set(read_corpus("negative-words")), set(
+            read_corpus("positive-words")
+        )
+
+        df = gen_dataframe(positive_corpus, negative_corpus, random_state=42)
+        df["clean_review"] = df["review"].apply(preprocess_text)
+
+        base_feature_count = 1000
+        extra_feature_count = 2
+        feature_count = base_feature_count - (
+            6 + extra_feature_count
+        )  # 6 primary features + 2 extra features
+        cv = CountVectorizer(
+            max_features=feature_count
+        )  # 6 primary features + 2 extra features
+        cv.fit(df["clean_review"])
+
+        def vectorizer(review):
+            result = cv.transform([review])
+            return result.toarray()[0].tolist()  # type: ignore
+            #        ^      ^          ^
+            #   spmatrix ndarray    list
+            # it definitely exists, type hinter is just bad
+
+        df["features"] = df["clean_review"].apply(
+            extract_features,
+            args=(positive_words, negative_words),
+            vectorizer=vectorizer,
+        )
+        df["feature_vector"] = df["features"].apply(feature_to_vector, vectorizer=True)
+
+        X = np.array(df["feature_vector"].tolist())
+        y = np.array(df["tag"].tolist(), dtype=np.int32)
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+
+        model = NNClassifier(epochs=10, batch_size=32, lr=0.0001)
+
+        model.fit(X_train, y_train)
+
+        export_base = Path("export/model/NNClassifier")
+
+        if not os.path.exists(export_base):
+            export_base.mkdir(parents=True, exist_ok=True)
+
+        model.save(export_base / "model.dill")
+
+        with open(export_base / "vectorizer.dill", "wb") as f:
+            dill.dump(cv, f)
+
+        with open(export_base / "data.npz", "wb") as f:
+            np.savez_compressed(
+                f, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test
+            )

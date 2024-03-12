@@ -23,19 +23,33 @@ import dill as model_file
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import os
 
 
 from aifeel.util.preprocess import preprocess_text
 from aifeel.util.feature_extraction import extract_features, feature_to_vector
 from aifeel.util import gen_dataframe, read_corpus
+from aifeel.model.nn import NNClassifier
 from scipy.sparse import hstack
 
 # from tensorflow.keras.models import load_model
 # from tensorflow.keras.saving import pickle_utils
 
+
+@st.cache_resource
+def init_stuffs():
+    print("Exporting basic model")
+    NNClassifier.export_basic_model()
+    print("Exported basic model")
+    return True
+
+
 negative_words, positive_words = set(read_corpus("negative-words")), set(
     read_corpus("positive-words")
 )
+
+_not_used = init_stuffs()
+
 vectorizer_for_multi = model_file.load(
     open("export/model/TFIDFModelClassifier/vectorizer.dill", "rb")
 )

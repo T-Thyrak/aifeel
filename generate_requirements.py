@@ -14,7 +14,8 @@ full = reqs + [item for sublist in optional_reqs.values() for item in sublist]
 
 def generate_requirements():
     with open("requirements.txt", "w") as f:
-        f.write("\n".join(full))
+        # f.write("\n".join(full))
+        f.write(".[full]\n")
 
     if not os.path.exists("requirements"):
         os.makedirs("requirements")
