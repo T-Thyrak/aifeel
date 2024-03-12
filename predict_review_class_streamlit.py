@@ -5,13 +5,19 @@ import dill as model_file
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import nltk
 
 
 from aifeel.util.preprocess import preprocess_text
 from aifeel.util.feature_extraction import extract_features, feature_to_vector
 from aifeel.util import gen_dataframe, read_corpus
 from scipy.sparse import hstack
+#from tensorflow.keras.models import load_model
+#from tensorflow.keras.saving import pickle_utils
 
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('stopwords')
 
 negative_words, positive_words = set(read_corpus("negative-words")), set(
     read_corpus("positive-words")
